@@ -106,16 +106,28 @@ function traceMiddlewares(atatus) {
             const name = 'Middleware ' + (middleware.name || 'anonymous' + anonymousMW.indexOf(middleware));
 
             const wrapped = async function (ctx, next) {
-                let endTracer = atatus.createLayer(name, () => {});
+                let endTracer;
+                if (atatus.agent &&
+                    atatus.agent.tracer &&
+                    atatus.agent.tracer.getTransaction()) {
+                    endTracer = atatus.createLayer(name, () => {});
+                }
 
                 const wrappedNext = async function () {
-                    endTracer();
+                    if (endTracer) {
+                        endTracer();
+                    }
+
                     try {
                         await next();
                     } catch (e) {
                         throw e;
                     } finally {
-                        endTracer = atatus.createLayer(name, () => {});
+                        if (atatus.agent &&
+                            atatus.agent.tracer &&
+                            atatus.agent.tracer.getTransaction()) {
+                            endTracer = atatus.createLayer(name, () => {});
+                        }
                     }
                 };
 
@@ -124,7 +136,9 @@ function traceMiddlewares(atatus) {
                 } catch (e) {
                     throw e;
                 } finally {
-                    endTracer();
+                    if (endTracer) {
+                        endTracer();
+                    }
                 }
             };
 

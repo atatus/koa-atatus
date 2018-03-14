@@ -1,7 +1,7 @@
 {
   "name": "koa-atatus",
   "description": "Koa middleware to allow Atatus monitor Koa applications",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/atatus/koa-atatus",
   "author": {
     "name": "Atatus",
